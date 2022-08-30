@@ -38,18 +38,18 @@ export default async (
             <a href="https://www.docs.citodata.com/docs/connections/bi-tools">BI Tool</a
             ><br />Help us keep our column-level lineage updated so we can support you in
             understanding the root cause and impact of anomalies<br /><br />Choose where
-            to receive anomalies by installing the
+            to receive anomaly alerts by installing the
             <a href="https://www.docs.citodata.com/docs/connections/slack"
                 >Cito Slack App</a
             >
             <br />
-            Creating transparency on the health of your data assets helps to respond to
-            incidents more efficiently <br />
+            Know about silent data issues before your business stakeholders discover them in the BI layer <br />
             <br />
             We&rsquo;re always here for you! Send us an email or message us in the shared
-            Slack channel we&rsquo;ll invite you to shortly.
+            Slack channel we&rsquo;ll invite you to shortly.<br />
+            <br />
 
-            Your Cito team
+            Your Cito Team
             </p>
           `,
           },
