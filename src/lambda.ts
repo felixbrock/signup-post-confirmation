@@ -9,13 +9,14 @@ export const handler = async (
   callback: any
 ): Promise<void> => {
   try {
-    const { firstName } = event.request.userAttributes;
-    if (!firstName) throw new Error('First name not available');
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    const { given_name } = event.request.userAttributes;
+    if (!given_name) throw new Error('First name not available');
 
     const { email } = event.request.userAttributes;
     if (!email) throw new Error('User email not available');
 
-    const sendEmailResult = await sendEmail(email, firstName);
+    const sendEmailResult = await sendEmail(email, given_name);
 
     if (!sendEmailResult.success) {
       callback(`--> ${sendEmailResult.error}`, event);
