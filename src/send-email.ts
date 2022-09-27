@@ -9,7 +9,9 @@ import Result from './result';
 
 export default async (
   to: string,
-  firstName: string
+  subject: string,
+  message: string,
+  includeBcc: boolean
 ): Promise<Result<string>> => {
   try {
     const client = new SESClient({ region: appConfig.cloud.region });
@@ -17,46 +19,18 @@ export default async (
     const input: SendEmailCommandInput = {
       Destination: {
         ToAddresses: [to],
-        BccAddresses: appConfig.cloud.ses.bcc,
+        BccAddresses: includeBcc ? appConfig.cloud.ses.bcc: undefined,
       },
       Message: {
         Body: {
           Html: {
             Charset: 'UTF-8',
-            Data: `
-            <p>
-            ${firstName}, we&rsquo;re super excited to have you with us! Start observing
-            Snowflake in under 20 minutes with these 3 easy steps:<br /><br />Connect to
-            <a href="https://www.docs.citodata.com/docs/connections/snowflake"
-                >Snowflake</a
-            ><br />We&rsquo;ll start observing your data warehouse so we can let you know
-            about any anomalies we detect<br /><br />Install the
-            <a href="https://www.docs.citodata.com/docs/connections/github"
-                >Cito GitHub App</a
-            >
-            and automatically connect to your
-            <a href="https://www.docs.citodata.com/docs/connections/bi-tools">BI Tool</a
-            ><br />Help us keep our column-level lineage updated so we can support you in
-            understanding the root cause and impact of anomalies<br /><br />Choose where
-            to receive anomaly alerts by installing the
-            <a href="https://www.docs.citodata.com/docs/connections/slack"
-                >Cito Slack App</a
-            >
-            <br />
-            Know about silent data issues before your business stakeholders discover them in the BI layer <br />
-            <br />
-            We&rsquo;re always here for you! Send us an email or message us in the shared
-            Slack channel we&rsquo;ll invite you to shortly.<br />
-            <br />
-
-            Your Cito Team
-            </p>
-          `,
+            Data: message,
           },
         },
         Subject: {
           Charset: 'UTF-8',
-          Data: 'Welcome to Cito',
+          Data: subject,
         },
       },
       Source: appConfig.cloud.ses.source,

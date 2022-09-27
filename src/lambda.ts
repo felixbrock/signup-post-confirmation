@@ -3,7 +3,6 @@ import { appConfig } from './config';
 import createAccount from './create-account';
 import sendEmail from './send-email';
 
-
 const getJwt = async (): Promise<string> => {
   try {
     const config: AxiosRequestConfig = {
@@ -45,14 +44,22 @@ export const handler = async (
   callback: any
 ): Promise<void> => {
   try {
-
     const { userName } = event;
     const jwt = await getJwt();
 
     const createAccountResult = await createAccount(userName, jwt);
 
-    if(!createAccountResult.success) {
-      callback(`--> ${createAccountResult.error}`, event);
+    if (!createAccountResult.success) {
+      // callback(`--> ${createAccountResult.error}`, event);
+      const sendOperatorEmailResult = await sendEmail(
+        'felix@citodata.com',
+        '[ACT] Signup Process failed',
+        `<p>Signup Process Error: Create account failed for (username: ${userName}, error: ${createAccountResult.error})</p>`,
+        false
+      );
+      if (!sendOperatorEmailResult.success)
+        throw new Error(sendOperatorEmailResult.error);
+      callback(null, event);
       return;
     }
 
@@ -63,19 +70,64 @@ export const handler = async (
     const { email } = event.request.userAttributes;
     if (!email) throw new Error('User email not available');
 
-    const sendEmailResult = await sendEmail(email, given_name);
+    const message = `
+    <p>
+    ${given_name}, we&rsquo;re super excited to have you with us! Start observing
+    Snowflake in under 20 minutes with these 3 easy steps:<br /><br />Connect to
+    <a href="https://www.docs.citodata.com/docs/connections/snowflake"
+        >Snowflake</a
+    ><br />We&rsquo;ll start observing your data warehouse so we can let you know
+    about any anomalies we detect<br /><br />Install the
+    <a href="https://www.docs.citodata.com/docs/connections/github"
+        >Cito GitHub App</a
+    >
+    and automatically connect to your
+    <a href="https://www.docs.citodata.com/docs/connections/bi-tools">BI Tool</a
+    ><br />Help us keep our column-level lineage updated so we can support you in
+    understanding the root cause and impact of anomalies<br /><br />Choose where
+    to receive anomaly alerts by installing the
+    <a href="https://www.docs.citodata.com/docs/connections/slack"
+        >Cito Slack App</a
+    >
+    <br />
+    Know about silent data issues before your business stakeholders discover them in the BI layer <br />
+    <br />
+    We&rsquo;re always here for you! Send us an email or message us in the shared
+    Slack channel we&rsquo;ll invite you to shortly.<br />
+    <br />
+
+    Your Cito Team
+    </p>
+  `;
+
+    const sendEmailResult = await sendEmail(
+      email,
+      'Welcome to Cito',
+      message,
+      true
+    );
 
     if (!sendEmailResult.success) {
-      callback(`--> ${sendEmailResult.error}`, event);
+      // callback(`--> ${sendEmailResult.error}`, event);
+      const sendOperatorEmailResult = await sendEmail(
+        'felix@citodata.com',
+        '[ACT] Signup Process failed',
+        `<p>Signup Process Error: Send confirmation email failed for (username: ${userName}, email: ${email}, given_name: ${given_name}, error: ${createAccountResult.error})</p>`,
+        false
+      );
+      if (!sendOperatorEmailResult.success)
+        throw new Error(sendOperatorEmailResult.error);
+      callback(null, event);
       return;
     }
 
-    console.log(`Send message (${sendEmailResult.value}) to ${email}`);
+    console.log(`Sent message (${sendEmailResult.value}) to ${email}`);
 
     callback(null, event);
   } catch (error: any) {
     if (typeof error === 'string') console.error(error);
     else if (error instanceof Error) console.error(error.message);
     console.error('Unknown error occurred');
+    callback(null, event);
   }
 };
