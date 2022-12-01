@@ -11,7 +11,7 @@
     "build": "npm run clean && npm run tsc && npm run lint",
     "start": "npm run build && nodemon ./src/index.ts",
     "deploy": "npm run build && serverless deploy && npm run write-env ",
-    "write-env": "@powershell -NoProfile -ExecutionPolicy Unrestricted -Command ./write-env.ps1 -functionName signup-post-confirmation-production-app",
+    "write-env": "./write-env \"signup-post-confirmation-production-app\"",
     "debug": "npm run build && nodemon --inspect=3072 ./src/index.ts"
   },
   "repository": {
