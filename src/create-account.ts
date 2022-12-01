@@ -27,7 +27,7 @@ export default async (username: string, jwt: string): Promise<Result<undefined>>
       name: crypto.randomUUID(),
     };
 
-    const accountServiceUrl = 'https://p2krek4fsj.execute-api.eu-central-1.amazonaws.com/production';
+    const accountServiceUrl = 'https://b5oerjsr53kgpitik7yu3i6eca0pklio.lambda-url.eu-central-1.on.aws';
     const apiRoot = 'api/v1';
 
     const readAccountsConfig: AxiosRequestConfig = {...config, params: new URLSearchParams({userId: username})};
